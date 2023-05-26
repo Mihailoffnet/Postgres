@@ -2,19 +2,19 @@
 ##### Ограничения в PostgreSQL: https://www.postgresql.org/docs/current/ddl-constraints.html
 
 ### Команды CREATE
-- createDB -U postgress name 
+* createDB -U postgress name 
     Создать базу данных name
-- pg_restore -U postgres -d dvdrental путь_к_вашему_файлу.tar
+* pg_restore -U postgres -d dvdrental путь_к_вашему_файлу.tar
     Выполнить загрузку данных:
-- psql -U postgress -d name 
--    Переключиться на управление БД name
-- CREATE TABLE table_name (id PRIMARY KEY, column_name1 VARCHAR(80) UNIQUE NOT NULL, column_name2 DATA NOT NULL, column_name3 VARCHAR(128) NOT NULL); 
+* psql -U postgress -d name 
+    Переключиться на управление БД name
+* CREATE TABLE table_name (id PRIMARY KEY, column_name1 VARCHAR(80) UNIQUE NOT NULL, column_name2 DATA NOT NULL, column_name3 VARCHAR(128) NOT NULL); 
     создать таблицу table_name с столбцом id первичный ключ, столбцом column_name1 тип текст длиной 80 символов, столбцом column_name2 тип DATA и столбцом column_name3 тип текст длиной 120 символом, который не может быть пустым.
-- CREATE TABLE IF NOT EXISTS table_name (id INTEGER PRIMARY KEY REFERENCES another_table(another_id), column_name1 VARCHAR(80), column_name2 тип DATA, column_name3 TEXT); 
+* CREATE TABLE IF NOT EXISTS table_name (id INTEGER PRIMARY KEY REFERENCES another_table(another_id), column_name1 VARCHAR(80), column_name2 тип DATA, column_name3 TEXT); 
     создать таблицу table_name с столбцом id внешний ключ, ссылающийся на первичный ключ другой таблицы another_table атрибут another_id, столбцом column_name1 тип текст длиной 80 символов, столбцом column_name2 тип DATA и столбцом column_name3 тип текстбез ограничения.
-- CREATE TABLE IF NOT EXIST name (column, ...);
+* CREATE TABLE IF NOT EXIST name (column, ...);
     создать таблицу если такой еще нет
-- DROP TABLE name
+* DROP TABLE name
     удалить таблицу name
 
 ### Команды DROP
