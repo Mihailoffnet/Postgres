@@ -23,8 +23,7 @@
 - DROP CONSTRAINT col_name - удалить ограничение
 - DROP COLUMN name - удалить атрибут name
 
-### Работа с данными
-вставить в таблицу name:
+### Работа с данными INSERT, UPDATE и DELETE
 - INSERT INTO table_name (name1, name2) VALUES('value1', 'value2'); - вставить в таблицу table_name столбцы name1 и name2 значения value1 и value2
 - INSERT INTO table_name VALUES('value1', 'value2'); - тоже самое, но без указания атрибутов (возможно только при заполнении всех имеющихся в таблице атрибутов)
 - UPDATE table_name SET name = 'value' WHERE id = xxx; - изменить атрибут name с id xxx в таблице table_name на новое значение value
