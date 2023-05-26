@@ -40,6 +40,20 @@
 - SELECT name1, name2 FROM table_name WHERE name2 >= X; - фильтрация данных по условию. Вывести атрибуты name1 и name2 из таблицы table_name при условии, что name3 >= X (доступно так же <=, =, <. >, <>)
 - SELECT name1, name2  FROM table_name WHERE name3  = 'value'; - тоже самое, что и выше.
 - SELECT name1, name2 FROM table_name WHERE name3 = true AND NOT name4 = X; - фильтрация по нескольким условиям, используя команды AND и NOT
+- SELECT name1, name2 FROM table_name WHERE name3 <= X AND name4 <= Y OR name5 < Z; - фильтрация по нескольким условиям. Выполняется сначала AND потом OR
+- SELECT name1, name2, name3 FROM table_name WHERE name3 IN ('value1', 'value2'); - Вывести атрибутs name1, name2 и name3 у которых name3 равно value1 или value2
+- SELECT name1, name2, name3 FROM table_name WHERE name3 NOT IN ('value1', 'value2'); - Вывести атрибутs name1, name2 и name3 у которых name3 не равно value1 или value2
+- SELECT name1, name2 FROM table_name WHERE name2 BETWEEN X AND Y; - Вывести атрибуты name1, name2 у которых name2 находится в диапазоне между X и Y включая границы
+- SELECT name1, name2 FROM table_name WHERE name2 NOT BETWEEN X AND Y; - Вывести атрибуты name1, name2 у которых name2 не находится в диапазоне между X и Y (не включая границы)
+- SELECT name1, name2, name3 FROM table_name WHERE name1 LIKE 'value'; - Вывести атрибуты name1, name2  name3 у которых name1 содержит внутри слово или значение value
+- SELECT name1, name2, name3 FROM table_name WHERE name1 LIKE '%value%'; - Вывести атрибуты name1, name2  name3 у которых name1 содержит внутри вхождение части слова или значения value
+- SELECT name1, name2, name3 FROM table_name WHERE name1 LIKE '%value'; - Вывести атрибуты name1, name2  name3 у которых name1 содержит внутри значение с окончанием value (или с началом значения value%) 
+- SELECT name1, name2, name3 FROM table_name WHERE name1 LIKE '%value_'; - Вывести атрибуты name1, name2  name3 у которых name1 содержит внутри значение с окончанием value после которого идет еще один любой симвод (_ - любой один символ)
+- SELECT name1, name2 FROM table_name ORDER BY name2; - Вывести атрибуты name1, name2 с сортировкой по возрастанию по столбцу name2
+- SELECT name1, name2 FROM table_name ORDER BY name2 ASC; - Вывести атрибуты name1, name2 с сортировкой по возрастанию по столбцу name2
+- SELECT name1, name2 FROM table_name ORDER BY name2 DESC; - Вывести атрибуты name1, name2 с сортировкой по убыванию по столбцу name2
+- SELECT name1, name2, name3 FROM table_name WHERE name3 LIKE '%value%' ORDER BY name1, name2; - Вывести атрибуты name1, name2 и name3 с сортировкой по возрастанию сначала по столбцу name1 потом по столбцу name2 с уловием вхождения value внутри значения name3
+- SELECT name1, name2, name3 FROM table_name ORDER BY length name1, name2 LIMIT 15; - Вывести атрибуты name1, name2 и name3 первые 15 записей с сортировкой по возрастанию сначала по столбцу name1 потом по столбцу name2
 
 ### Загрузить базу из файла *.tar
 - Создать БД с нужным названием createdb -U postgres name
@@ -141,7 +155,7 @@
 
 - выберем все поля из таблицы film
 > SELECT * FROM film;
-> 
+
 - выберем столбец title таблицы film
 > SELECT title FROM film; - выберем столбец title таблицы film
 
@@ -176,6 +190,9 @@
 > WHERE store_id != 2;
 - найдем только работающих сотрудников из всех магазинов, кроме 1
 > SELECT first_name, last_name FROM staff 
+
+### AND / OR / NOT 
+##### Логика: Выполняется сначала AND потом OR
 > WHERE active = true AND NOT store_id = 1;
 - найдем фильмы, цена проката которых меньше 0.99, а цена возмещения меньше 9.99
 > SELECT title, rental_rate, replacement_cost FROM film 
@@ -193,6 +210,7 @@
 > WHERE rating NOT IN ('G', 'PG');
 
 ### BETWEEN
+##### BETWEEN X AND Y - между X и Y
 - в диапазоне (включая границы)
 > SELECT title, rental_rate FROM film 
 > WHERE rental_rate 
@@ -203,6 +221,7 @@
 > BETWEEN 0.99 AND 3;
 
 ### LIKE
+#### LIKE позволяет искать вхождение внутри слов
 - найдем фильм, в описании которого есть Scientist
 > SELECT title, description FROM film 
 > WHERE description 
