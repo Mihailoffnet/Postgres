@@ -5,22 +5,22 @@
 - createDB -U postgress name - Создать базу данных name
 - Выполнить загрузку данных: pg_restore -U postgres -d dvdrental путь_к_вашему_файлу.tar
 - psql -U postgress -d name - Переключиться на управление БД name
-- CREATE TABLE name (column, ...); - создать таблицу с указанными столбцами
+- CREATE TABLE table_name (id PRIMARY KEY, column_name1 VARCHAR(80) UNIQUE NOT NULL, column_name2 DATA NOT NULL, column_name3 VARCHAR(128) NOT NULL); - создать таблицу table_name с столбцом id первичный ключ, столбцом column_name1 тип текст длиной 80 символов, столбцом column_name2 тип DATA и столбцом column_name3 тип текст длиной 120 символом, который не может быть пустым.
+- CREATE TABLE IF NOT EXISTS table_name (id INTEGER PRIMARY KEY REFERENCES another_table(another_id), column_name1 VARCHAR(80), column_name2 тип DATA, column_name3 TEXT); - создать таблицу table_name с столбцом id внешний ключ, ссылающийся на первичный ключ другой таблицы another_table атрибут another_id, столбцом column_name1 тип текст длиной 80 символов, столбцом column_name2 тип DATA и столбцом column_name3 тип текстбез ограничения.
 - CREATE TABLE IF NOT EXIST name (column, ...); - создать таблицу если такой еще нет
 - DROP TABLE name - удалить таблицу name
 
 ### Команды DROP
 - DROP TABLE student; - УДАЛИТЬ ТАБЛИЦУ student.
-В случае удачной команды в конcоли видим DROP TABLE, то есть таблица удалена.
-
+-
 ### Команды ALTER TABLE table_name
-- ADD COLUMN name TYPE CONSTRAINTS - добавить атрибут (столбец) name
-- RENAME TO new_name - переименовать таблицу table_name в new_name
-- RENAME name TO new_name - переименовать атрибут name в new_name
-- ALTER COLUMN name SET DATA TYPE type - изменить тип атрибута name на type
-- ADD CONSTRAINT col_name constraint - добавить ограничение
-- DROP CONSTRAINT col_name - удалить ограничение
-- DROP COLUMN name - удалить атрибут name
+- ALTER TABLE table_name ADD COLUMN name TYPE CONSTRAINTS - добавить атрибут (столбец) name
+- ALTER TABLE table_name RENAME TO new_name - переименовать таблицу table_name в new_name
+- ALTER TABLE table_name RENAME name TO new_name - переименовать атрибут name в new_name
+- ALTER TABLE table_name ALTER COLUMN name SET DATA TYPE type - изменить тип атрибута name на type
+- ALTER TABLE table_name ADD CONSTRAINT col_name constraint - добавить ограничение
+- ALTER TABLE table_name DROP CONSTRAINT col_name - удалить ограничение
+- ALTER TABLE table_name DROP COLUMN name - удалить атрибут name
 
 ### Работа с данными INSERT, UPDATE и DELETE
 - INSERT INTO table_name (name1, name2) VALUES ('value1', 'value2'); - вставить в таблицу table_name столбцы name1 и name2 значения value1 и value2
