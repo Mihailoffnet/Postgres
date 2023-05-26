@@ -70,193 +70,174 @@
 - JSONB - json-поля
 -
 ## Примеры команд PostgreSQL для консоли
-
-### CREATE TABLE student (id SERIAL PRIMARY KEY, name VARCHAR(60) NOT NULL); 
 - СОЗДАТЬ ТАБЛИЦУ с именем student со столбцами: id тип SERIAL (самоувеличивается на единицу) с ограничением PRIMARY KEY и второй столбец name тип строка VARCHAR с ограничением длины имени (60) символов и ограничением NOT NULL (не может быть пустой). 
+CREATE TABLE student (id SERIAL PRIMARY KEY, name VARCHAR(60) NOT NULL); 
 В случае удачной команды в консоли видим CREATE TABLE - то есть таблица создана.
-### CREATE TABLE IF NOT EXIST student (id SERIAL PRIMARY KEY, name VARCHAR(60) NOT NULL); 
+
 - добавлена команда IF NOT EXIST что значит "если такой таблицы еще нет". То есть таблица будет создана если ее не было, и будет пропущена без ошибки, если такая таблица уже есть в БД.
-### ALTER TABLE student RENAME name TO first_name;
+CREATE TABLE IF NOT EXIST student (id SERIAL PRIMARY KEY, name VARCHAR(60) NOT NULL);
+
 - ИЗМЕНИТЬ ТАБЛИЦУ student ПЕРЕИМЕНОВАТЬ столбец name на first_name
+-ALTER TABLE student RENAME name TO first_name;
 В случае удачной команды в конcоли видим ALTER TABLE, то есть изменения применены.
-### ALTER TABLE Student ADD COLUMN surname VARCHAR(60) NOT NULL;
+
 - Добавить в таблицу Student атрибут surname строковый с ограничением 60 символовб который не может быть пустым.
+ALTER TABLE Student ADD COLUMN surname VARCHAR(60) NOT NULL;
 
+-один к одному (1 вариант)
+CREATE TABLE IF NOT EXISTS Student (
+	email VARCHAR(80) PRIMARY KEY,
+	name VARCHAR(40) NOT NULL,
+	password VARCHAR(128) NOT NULL);
+	
+CREATE TABLE IF NOT EXISTS StudentInfo (
+	email VARCHAR(80) PRIMARY KEY REFERENCES Student(email),
+	birthday date,
+	city VARCHAR(60),
+	roi TEXT);
 
--- все, что начинается с двух дефисов - это комментарий
-
--- один к одному (1 вариант)
-
---CREATE TABLE IF NOT EXISTS Student (
---	email VARCHAR(80) PRIMARY KEY,
---	name VARCHAR(40) NOT NULL,
---	password VARCHAR(128) NOT NULL
---);
---
---CREATE TABLE IF NOT EXISTS StudentInfo (
---	email VARCHAR(80) PRIMARY KEY REFERENCES Student(email),
---	birthday date,
---	city VARCHAR(60),
---	roi TEXT
---);
-
--- один к одному (2 вариант)
-
+-один к одному (2 вариант)
 CREATE TABLE IF NOT EXISTS Student (
 	id SERIAL PRIMARY KEY,
 	email VARCHAR(80) UNIQUE NOT NULL,
 	name VARCHAR(40) NOT NULL,
-	PASSWORD VARCHAR(128) NOT NULL
-);
+	PASSWORD VARCHAR(128) NOT NULL);
 
 CREATE TABLE IF NOT EXISTS StudentInfo (
 	id INTEGER PRIMARY KEY REFERENCES Student(id),
 	birthday date,
 	city VARCHAR(60),
-	roi TEXT
-);
+	roi TEXT);
 
--- один ко многим
-
+-один ко многим
 CREATE TABLE IF NOT EXISTS Course (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(60) NOT NULL,
-	description TEXT
-);
+	description TEXT);
 
 CREATE TABLE IF NOT EXISTS HomeworkTask (
 	id SERIAL PRIMARY KEY,
 	course_id INTEGER NOT NULL REFERENCES Course(id),
 	number INTEGER NOT NULL,
-	description TEXT NOT NULL
-);
+	description TEXT NOT NULL);
 
--- многие ко многим (1 вариант)
-
+-многие ко многим (1 вариант)
 CREATE TABLE IF NOT EXISTS CourseStudent (
 	course_id INTEGER REFERENCES Course(id),
 	student_id INTEGER REFERENCES Student(id),
-	CONSTRAINT pk PRIMARY KEY (course_id, student_id)
-);
+	CONSTRAINT pk PRIMARY KEY (course_id, student_id));
 
--- многие ко многим (2 вариант)
-
+-многие ко многим (2 вариант)
 CREATE TABLE IF NOT EXISTS HomeworkSolution (
 	id SERIAL PRIMARY KEY,
 	task_id INTEGER NOT NULL REFERENCES HomeworkTask(id),
 	student_id INTEGER NOT NULL REFERENCES Student(id),
-	solution TEXT NOT NULL
-);
+	solution TEXT NOT NULL);
 
--- выберем все поля из таблицы film
+-выберем все поля из таблицы film
 SELECT * FROM film;
 
--- выберем столбец title таблицы film
+-выберем столбец title таблицы film
 SELECT title FROM film;
 
--- выберем 2 столбца из таблицы film
+-выберем 2 столбца из таблицы film
 SELECT title, release_year FROM film;
 
--- Как работает DISTINCT
--- выведем столбец rating из film
+-Как работает DISTINCT
+-выведем столбец rating из film
 SELECT DISTINCT rating FROM film;
 
--- Примеры с арифметикой
--- переведем цены в условные рубли
+-Примеры с арифметикой
+-переведем цены в условные рубли
 SELECT amount * 70 FROM payment;
 
--- узнаем время аренды по позициям
+-узнаем время аренды по позициям
 SELECT return_date - rental_date FROM rental;
 
--- WHERE
--- найдем фильмы, вышедшие после 2000
+### WHERE
+-найдем фильмы, вышедшие после 2000
 SELECT title, release_year FROM film
 WHERE release_year >= 2000;
 
--- найдем сотрудников, которые сейчас работают
+-найдем сотрудников, которые сейчас работают
 SELECT first_name, last_name, active FROM staff
 WHERE active = true;
 
--- критерий не обязательно должен входить в выборку
+-критерий не обязательно должен входить в выборку
 SELECT first_name, last_name FROM staff
 WHERE active = true;
 
--- найдем ID, имена, фамилии актеров, которых зовут Joe
+-найдем ID, имена, фамилии актеров, которых зовут Joe
 SELECT actor_id, first_name, last_name FROM actor
 WHERE first_name = 'Joe';
 
--- найдем всех сотрудников, которые работают не во втором магазине
+-найдем всех сотрудников, которые работают не во втором магазине
 SELECT first_name, last_name FROM staff
 WHERE store_id != 2;
 
--- найдем только работающих сотрудников из всех магазинов, кроме 1
+-найдем только работающих сотрудников из всех магазинов, кроме 1
 SELECT first_name, last_name FROM staff
 WHERE active = true AND NOT store_id = 1;
 
--- найдем фильмы, цена проката которых меньше 0.99, а цена возмещения меньше 9.99
+-найдем фильмы, цена проката которых меньше 0.99, а цена возмещения меньше 9.99
 SELECT title, rental_rate, replacement_cost FROM film
 WHERE rental_rate <= 0.99 AND replacement_cost <= 9.99;
 
--- найдем фильмы аналогичные предыдущему примеру или продолжительностью меньше 50 минут
+-найдем фильмы аналогичные предыдущему примеру или продолжительностью меньше 50 минут
 SELECT title, length, rental_rate, replacement_cost FROM film
 WHERE rental_rate <= 0.99 AND replacement_cost <= 9.99 OR length < 50;
 
-
--- IN / NOT IN
--- найдем фильмы с рейтингом R, NC-17
+### IN / NOT IN
+-найдем фильмы с рейтингом R, NC-17
 SELECT title, description, rating FROM film
 WHERE rating IN ('R', 'NC-17');
 
--- найдем недетские фильмы
+-найдем недетские фильмы
 SELECT title, description, rating FROM film
 WHERE rating NOT IN ('G', 'PG');
 
-
--- BETWEEN
--- в диапазоне (включая границы)
+### BETWEEN
+-в диапазоне (включая границы)
 SELECT title, rental_rate FROM film
 WHERE rental_rate BETWEEN 0.99 AND 3;
 
--- вне диапазона (границы тоже инвертируются => не включая границы)
+-вне диапазона (границы тоже инвертируются => не включая границы)
 SELECT title, rental_rate FROM film
 WHERE rental_rate NOT BETWEEN 0.99 AND 3;
 
-
--- LIKE
--- найдем фильм, в описании которого есть Scientist
+### LIKE
+-найдем фильм, в описании которого есть Scientist
 SELECT title, description FROM film
 WHERE description LIKE '%Scientist%';
 
--- найдем ID, имена, фамилии актеров, фамилия которых содержит gen
+-найдем ID, имена, фамилии актеров, фамилия которых содержит gen
 SELECT actor_id, first_name, last_name FROM actor
 WHERE last_name LIKE '%gen%';
 
--- найдем ID, имена, фамилии актеров, фамилия которых оканчивается на gen
+-найдем ID, имена, фамилии актеров, фамилия которых оканчивается на gen
 SELECT actor_id, first_name, last_name FROM actor
 WHERE last_name LIKE '%gen';
 
-
--- ORDER BY
--- отсортируем фильмы по цене проката
+### ORDER BY
+-отсортируем фильмы по цене проката
 SELECT title, rental_rate FROM film
 ORDER BY rental_rate;
 
--- по убыванию
+-по убыванию
 SELECT title, rental_rate FROM film
 ORDER BY rental_rate DESC;
 
--- сортируем по нескольким столбцам: продолжительности и цене проката
+-сортируем по нескольким столбцам: продолжительности и цене проката
 SELECT title, length, rental_rate FROM film
 ORDER BY length DESC, rental_rate ASC;
 
--- найдем ID, имена, фамилии актеров, чья фамилия содержит li, 
--- отсортируем в алфавитном порядке по фамилии, затем по имени
+-найдем ID, имена, фамилии актеров, чья фамилия содержит li, отсортируем в алфавитном порядке по фамилии, затем по имени
 SELECT actor_id, first_name, last_name FROM actor 
 WHERE last_name LIKE '%li%' 
 ORDER BY last_name, first_name;
 
--- LIMIT
--- выведем первые 15 записей
+### LIMIT
+-выведем первые 15 записей
 SELECT title, length, rental_rate FROM film
 ORDER BY length DESC, rental_rate
 LIMIT 15;
