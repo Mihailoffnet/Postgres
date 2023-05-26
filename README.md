@@ -68,12 +68,26 @@
 - TIMESTAMP - Дата+время
 - BOOLEAN - логическийб булевы значения
 - JSONB - json-поля
--
+
 ## Примеры команд PostgreSQL для консоли
-- CREATE TABLE student (id SERIAL PRIMARY KEY, name VARCHAR(60) NOT NULL); - СОЗДАТЬ ТАБЛИЦУ с именем student со столбцами: id тип SERIAL (самоувеличивается на единицу) с ограничением PRIMARY KEY и второй столбец name тип строка VARCHAR с ограничением длины имени (60) символов и ограничением NOT NULL (не может быть пустой). 
-- CREATE TABLE IF NOT EXIST student (id SERIAL PRIMARY KEY, name VARCHAR(60) NOT NULL); - добавлена команда IF NOT EXIST что значит "если такой таблицы еще нет". То есть таблица будет создана если ее не было, и будет пропущена без ошибки, если такая таблица уже есть в БД.
-- ALTER TABLE student RENAME name TO first_name; - ИЗМЕНИТЬ ТАБЛИЦУ student ПЕРЕИМЕНОВАТЬ столбец name на first_name
-- ALTER TABLE Student ADD COLUMN surname VARCHAR(60) NOT NULL; - Добавить в таблицу Student атрибут surname строковый с ограничением 60 символовб который не может быть пустым.
+
+- СОЗДАТЬ ТАБЛИЦУ с именем student со столбцами: id тип SERIAL (самоувеличивается на единицу) с ограничением PRIMARY KEY и второй столбец name тип строка VARCHAR с ограничением длины имени (60) символов и ограничением NOT NULL (не может быть пустой). 
+> CREATE TABLE student (
+>   id SERIAL PRIMARY KEY, 
+>   name VARCHAR(60) NOT NULL);
+
+- добавлена команда IF NOT EXIST что значит "если такой таблицы еще нет". То есть таблица будет создана если ее не было, и будет пропущена без ошибки, если такая таблица уже есть в БД.
+> CREATE TABLE IF NOT EXIST student (
+>   id SERIAL PRIMARY KEY, 
+>   name VARCHAR(60) NOT NULL);
+
+- ИЗМЕНИТЬ ТАБЛИЦУ student ПЕРЕИМЕНОВАТЬ столбец name на first_name
+> ALTER TABLE student 
+> RENAME name TO first_name;
+
+- Добавить в таблицу Student атрибут surname строковый с ограничением 60 символовб который не может быть пустым.
+> ALTER TABLE Student 
+> ADD COLUMN surname VARCHAR(60) NOT NULL;
 
 - один к одному (1 вариант)
 > CREATE TABLE IF NOT EXISTS Student (
