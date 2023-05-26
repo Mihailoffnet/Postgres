@@ -76,16 +76,16 @@
 - ALTER TABLE Student ADD COLUMN surname VARCHAR(60) NOT NULL; - Добавить в таблицу Student атрибут surname строковый с ограничением 60 символовб который не может быть пустым.
 
 - один к одному (1 вариант)
-- CREATE TABLE IF NOT EXISTS Student (
-	email VARCHAR(80) PRIMARY KEY,
-	name VARCHAR(40) NOT NULL,
-	password VARCHAR(128) NOT NULL); 
-	
-- CREATE TABLE IF NOT EXISTS StudentInfo (
-	email VARCHAR(80) PRIMARY KEY REFERENCES Student(email),
-	birthday date,
-	city VARCHAR(60),
-	roi TEXT);
+> CREATE TABLE IF NOT EXISTS Student (
+>	email VARCHAR(80) PRIMARY KEY,
+>	name VARCHAR(40) NOT NULL,
+>	password VARCHAR(128) NOT NULL); 
+>	
+> CREATE TABLE IF NOT EXISTS StudentInfo (
+>	email VARCHAR(80) PRIMARY KEY REFERENCES Student(email),
+>	birthday date,
+>	city VARCHAR(60),
+>	roi TEXT);
 
 - один к одному (2 вариант)
 - CREATE TABLE IF NOT EXISTS Student (
@@ -94,7 +94,7 @@
 	name VARCHAR(40) NOT NULL,
 	PASSWORD VARCHAR(128) NOT NULL);
 
-CREATE TABLE IF NOT EXISTS StudentInfo (
+- CREATE TABLE IF NOT EXISTS StudentInfo (
 	id INTEGER PRIMARY KEY REFERENCES Student(id),
 	birthday date,
 	city VARCHAR(60),
