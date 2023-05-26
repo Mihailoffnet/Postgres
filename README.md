@@ -23,36 +23,45 @@
 - DROP COLUMN name - удалить атрибут name
 
 ### Работа с данными INSERT, UPDATE и DELETE
-- INSERT INTO table_name (name1, name2) VALUES('value1', 'value2'); - вставить в таблицу table_name столбцы name1 и name2 значения value1 и value2
-- INSERT INTO table_name VALUES('value1', 'value2'); - тоже самое, но без указания атрибутов (возможно только при заполнении всех имеющихся в таблице атрибутов)
+- INSERT INTO table_name (name1, name2) VALUES ('value1', 'value2'); - вставить в таблицу table_name столбцы name1 и name2 значения value1 и value2
+- INSERT INTO table_name VALUES ('value1', 'value2'); - тоже самое, но без указания атрибутов (возможно только при заполнении всех имеющихся в таблице атрибутов)
 - UPDATE table_name SET name = 'value' WHERE id = xxx; - изменить атрибут name с id xxx в таблице table_name на новое значение value
 - DELETE FROM table_name WHERE id = xxx; - удалить из таблицы table_name все записи у объекта с id = xxxvalue
 #### Внимание!!! Если не указать параметр WHERE то будут удалены ВСЕ записи из таблицы!!!
 
 ### SELECT запросы
+#### Все ни жеприведенные команды можно сочетать внутри одного запроса и создавать запросы любой сложности
+
+#### Простые SELECT запросы
 - SELECT * FROM table_name; - показать все записи из таблицы table_name
 - SELECT name FROM table_name; - Вывести атрибут name из таблицы table_name
+- SELECT name1, name2 FROM table_name; - Вывести указанные атрибуты из таблицы table_name 
+#### SELECT запросы с математическими функциями
 - SELECT name * X FROM table_name; - Вывести атрибут name умноженный на X из таблицы table_name. Кроме умножения, доступно деление, сложение, вычитание и взятие по остатку.
 - SELECT name1 - name2 FROM table_name; Вывести разность двух атрибутов name1 и name2 из таблицы table_name. Кроме умножения, доступно деление, сложение, вычитание и взятие по остатку.
 - SELECT DISTINCT name FROM table_name; - Вывести только уникальные значения атрибута name из таблицы table_name 
-- SELECT name1, name2 FROM table_name; - Вывести указанные атрибуты из таблицы table_name 
+#### SELECT запросы с условием WHERE
 - SELECT * FROM table_name WHERE id = xxx; показать записи c id xxx из таблицы table_name
 - SELECT name1, name2 FROM table_name WHERE name2 >= X; - фильтрация данных по условию. Вывести атрибуты name1 и name2 из таблицы table_name при условии, что name3 >= X (доступно так же <=, =, <. >, <>)
 - SELECT name1, name2  FROM table_name WHERE name3  = 'value'; - тоже самое, что и выше.
+#### SELECT запросы с несколькими условиями AND / OR / NOT / IN / BETWEEN
 - SELECT name1, name2 FROM table_name WHERE name3 = true AND NOT name4 = X; - фильтрация по нескольким условиям, используя команды AND и NOT
 - SELECT name1, name2 FROM table_name WHERE name3 <= X AND name4 <= Y OR name5 < Z; - фильтрация по нескольким условиям. Выполняется сначала AND потом OR
 - SELECT name1, name2, name3 FROM table_name WHERE name3 IN ('value1', 'value2'); - Вывести атрибутs name1, name2 и name3 у которых name3 равно value1 или value2
 - SELECT name1, name2, name3 FROM table_name WHERE name3 NOT IN ('value1', 'value2'); - Вывести атрибутs name1, name2 и name3 у которых name3 не равно value1 или value2
 - SELECT name1, name2 FROM table_name WHERE name2 BETWEEN X AND Y; - Вывести атрибуты name1, name2 у которых name2 находится в диапазоне между X и Y включая границы
 - SELECT name1, name2 FROM table_name WHERE name2 NOT BETWEEN X AND Y; - Вывести атрибуты name1, name2 у которых name2 не находится в диапазоне между X и Y (не включая границы)
+#### SELECT запросы с условием вхождения LIKE
 - SELECT name1, name2, name3 FROM table_name WHERE name1 LIKE 'value'; - Вывести атрибуты name1, name2  name3 у которых name1 содержит внутри слово или значение value
 - SELECT name1, name2, name3 FROM table_name WHERE name1 LIKE '%value%'; - Вывести атрибуты name1, name2  name3 у которых name1 содержит внутри вхождение части слова или значения value
 - SELECT name1, name2, name3 FROM table_name WHERE name1 LIKE '%value'; - Вывести атрибуты name1, name2  name3 у которых name1 содержит внутри значение с окончанием value (или с началом значения value%) 
 - SELECT name1, name2, name3 FROM table_name WHERE name1 LIKE '%value_'; - Вывести атрибуты name1, name2  name3 у которых name1 содержит внутри значение с окончанием value после которого идет еще один любой симвод (_ - любой один символ)
+#### SELECT запросы c сортировкой ORDER BY
 - SELECT name1, name2 FROM table_name ORDER BY name2; - Вывести атрибуты name1, name2 с сортировкой по возрастанию по столбцу name2
 - SELECT name1, name2 FROM table_name ORDER BY name2 ASC; - Вывести атрибуты name1, name2 с сортировкой по возрастанию по столбцу name2
 - SELECT name1, name2 FROM table_name ORDER BY name2 DESC; - Вывести атрибуты name1, name2 с сортировкой по убыванию по столбцу name2
 - SELECT name1, name2, name3 FROM table_name WHERE name3 LIKE '%value%' ORDER BY name1, name2; - Вывести атрибуты name1, name2 и name3 с сортировкой по возрастанию сначала по столбцу name1 потом по столбцу name2 с уловием вхождения value внутри значения name3
+#### SELECT запросы c лимитом LIMIT
 - SELECT name1, name2, name3 FROM table_name ORDER BY length name1, name2 LIMIT 15; - Вывести атрибуты name1, name2 и name3 первые 15 записей с сортировкой по возрастанию сначала по столбцу name1 потом по столбцу name2
 
 ### Загрузить базу из файла *.tar
