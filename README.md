@@ -83,6 +83,7 @@
 - SELECT name1, name2 FROM table_name WHERE name2 < (SELECT MAX(name2) FROM table_name) ORDER BY name1 DESC; - найдем все записи с name2 которое меньше максимумального значения и отслортируем в обратном порядке по name1. 
 
 ## Группировки
+### столбец, который используется в GROUP BY обязательно ДОЛЖЕН БЫТЬ В SELECT
 - SELECT name1, COUNT(*) FROM table_name GROUP BY name1 ORDER BY COUNT(*) DESC; сгруппируем и посчитаем количество name1, отсортируем в обратном порядке
 - SELECT name1, COUNT(name2) FROM table_name GROUP BY name1 ORDER BY COUNT(name2) DESC; - посчитаем количетсво name2 в разрезе name1 и отсортируем по name2 в обратном порядке
 - SELECT name2, MAX(name1) FROM table_name GROUP BY name2; - найдем максимальные name1 в разрезе name2 с группировкой в таблице table_name
@@ -100,8 +101,10 @@ GROUP BY rating;
 - SELECT name1, SUM(name2) FROM table_name WHERE name1 LIKE '%Value%' GROUP BY title HAVING SUM(name2) > X; - найдем name1, у которых есть Value в названии и name2 в сумме больше Х
 
 ## ALIAS -псевдонимы
-- SELECT name1 AS n1, SUM(name2n) AS sum_n2 FROM table_name WHERE n1 LIKE '%Value%' GROUP BY n1 HAVING sum_n2 > X; - предыдущий запрос с псевдонимами
-- SELECT name1 n1, SUM(name2n) sum_n2 FROM table_name WHERE n1 LIKE '%Value%' GROUP BY n1 HAVING sum_n2 > X; - ключевое слово AS можно не писать, это все тот же запрос
+### Псевдонимы используются для того, что бы обращаться к таблице или атрибуту по короткому имени
+### ВАЖНО! В WHERE и HAVING псевдонимы не используются, в них нужно указывать полное имя
+- SELECT name1 AS n1, SUM(name2) AS sum_n2 FROM table_name WHERE n1 LIKE '%Value%' GROUP BY n1 HAVING SUM(name2) > X; - предыдущий запрос с псевдонимами
+- SELECT name1 n1, SUM(name2) sum_n2 FROM table_name WHERE name1 LIKE '%Value%' GROUP BY n1 HAVING SUM(name2) > X; - ключевое слово AS можно не писать, это все тот же запрос
 
 ## JOIN - Объединение таблиц 
 - SELECT name1, name2, name3 FROM table_name1 t_n1 LEFT JOIN table_name2 t_n2 ON t_n1.foreign_id = t_n2.primery_id; - выведем name1, name2 (из table_name1) и name3 (из table_name2) объединив их на основании table_name1 (все строки из левой таблицы, из table_name1) через сопоставление внешнего ключа из table_name1 (t_n1) и первичного ключа из table_name2 (t_n2)
