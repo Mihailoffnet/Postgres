@@ -71,6 +71,126 @@
 #### SELECT запросы c лимитом LIMIT
 - SELECT name1, name2, name3 FROM table_name ORDER BY length name1, name2 LIMIT 15; - Вывести атрибуты name1, name2 и name3 первые 15 записей с сортировкой по возрастанию сначала по столбцу name1 потом по столбцу name2
 
+## Агрегирующие функции
+- SELECT MAX(name1) FROM table_name; - найдем максимальное значение атрибута name1 в таблице table_name
+- SELECT AVG(name1) FROM table_name; - найдем среднее значение атрибута name1 в таблице table_name
+- SELECT COUNT(DISTINCT name1) FROM table_name; - найдем количество (DISTINCT - уникальных) атрибутов name1 в таблице table_name
+- SELECT SUM(name1)б AVG(name1) FROM table_name WHERE name2 = X; - найдем сумму атрибутов name1 и среднее значение атрибутов name1 у которых name2 = X в таблице table_name 
+
+## Вложенные запросы
+### Вложенных запросов может быть любое количество. Обратите внимание, что сначала выполняется вложенный запрос, а потом уже общий с учетом значения вложенного запроса
+- SELECT name1, name2 FROM table_name WHERE name2 >= (SELECT AVG(name2) FROM table_name); найдем все записи с name2 больше или равному среднему значению. 
+- SELECT name1, name2 FROM table_name WHERE name2 < (SELECT MAX(name2) FROM table_name) ORDER BY name1 DESC; - найдем все записи с name2 которое меньше максимумального значения и отслортируем в обратном порядке по name1. 
+
+
+## Группировки
+- SELECT name1, COUNT(*) FROM table_name GROUP BY name1 ORDER BY COUNT(*) DESC; сгруппируем и посчитаем количество name1, отсортируем в обратном порядке
+- SELECT name1, COUNT(name2) FROM table_name GROUP BY name1 ORDER BY COUNT(name2) DESC; - посчитаем количетсво name2 в разрезе name1 и отсортируем по name2 в обратном порядке
+- SELECT name2, MAX(name1) FROM table_name GROUP BY name2; - найдем максимальные name1 в разрезе name2 с группировкой в таблице table_name
+- SELECT name1, name2, AVG(name3) FROM table_name GROUP BY name1, name2 ORDER BY AVG(name3) DESC; - найдем средние name3 каждого name1 каждому name2 с группировкой по name1, name2 и отсортируем в обратном порядке по name3 в таблице table_name
+
+-- найдем среднюю продолжительность фильма в разрезе рейтингов в 2006 году
+SELECT rating, AVG(length) FROM film
+WHERE release_year = 2006
+GROUP BY rating;
+
+
+## Оператор HAVING
+### Тоже, что и WHERE, но работает после выполнения WHERE по результатам первой выборки
+SELECT name1, COUNT(*) FROM table_name GROUP BY name1 HAVING COUNT(*) = 1; - отберем только name1, которые не повторяются и выведем все столбцы
+
+-- отберем и посчитаем только фамилии актеров, которые повторяются
+SELECT last_name, COUNT(*) FROM actor
+GROUP BY last_name
+HAVING COUNT(*) > 1
+ORDER BY COUNT(*) DESC;
+
+-- найдем фильмы, у которых есть Super в названии 
+-- и они сдавались в прокат суммарно более, чем на 5 дней
+SELECT title, SUM(rental_duration) FROM film
+WHERE title LIKE '%Super%'
+GROUP BY title
+HAVING SUM(rental_duration) > 5;
+
+
+-- ALIAS
+-- предыдущий запрос с псевдонимами
+SELECT title AS t, SUM(rental_duration) AS sum_t FROM film AS f
+WHERE title LIKE '%Super%'
+GROUP BY t
+HAVING SUM(rental_duration) > 5;
+
+-- ключевое слово AS можно не писать
+SELECT title t, SUM(rental_duration) sum_t FROM film f
+WHERE title LIKE '%Super%'
+GROUP BY t
+HAVING SUM(rental_duration) > 5;
+
+
+-- Объединение таблиц
+-- выведем имена, фамилии и адреса всех сотрудников
+SELECT first_name, last_name, address FROM staff s
+LEFT JOIN address a ON s.address_id = a.address_id;
+
+-- определим количество продаж каждого продавца
+SELECT s.last_name, COUNT(amount) FROM payment p
+LEFT JOIN staff s ON p.staff_id = s.staff_id
+GROUP BY s.last_name;
+
+-- посчитаем, сколько актеров играло в каждом фильме
+SELECT title, COUNT(actor_id) actor_q FROM film f
+JOIN film_actor a ON f.film_id = a.film_id
+GROUP BY f.title
+ORDER BY actor_q DESC;
+
+-- сколько копий фильмов со словом Super в названии есть в наличии
+SELECT title, COUNT(inventory_id) FROM film f
+JOIN inventory i ON f.film_id = i.film_id
+WHERE title LIKE '%Super%'
+GROUP BY title;
+
+-- выведем список покупателей с количеством их покупок в порядке убывания
+SELECT c.last_name n, COUNT(p.amount) amount FROM customer c
+LEFT JOIN payment p ON c.customer_id = p.customer_id
+GROUP BY n
+ORDER BY amount DESC;
+
+-- выведем имена и почтовые адреса всех покупателей из России
+SELECT c.last_name, c.first_name, c.email FROM customer c
+JOIN address a ON c.address_id = a.address_id
+JOIN city ON a.city_id = city.city_id
+JOIN country co ON city.country_id = co.country_id
+WHERE country = 'Russian Federation';
+
+-- фильмы, которые берут в прокат чаще всего
+SELECT f.title, COUNT(r.inventory_id) count FROM film f
+JOIN inventory i ON f.film_id = i.film_id
+JOIN rental r ON i.inventory_id = r.inventory_id
+GROUP BY f.title
+ORDER BY count DESC;
+
+-- суммарные доходы магазинов
+SELECT s.store_id, SUM(p.amount) sales FROM store s 
+JOIN staff st ON s.store_id = st.store_id
+JOIN payment p ON st.staff_id = p.staff_id
+GROUP BY s.store_id;
+
+-- найдем города и страны каждого магазина
+SELECT store_id, city, country FROM store s 
+JOIN address a ON s.address_id = a.address_id
+JOIN city ON a.city_id = city.city_id
+JOIN country c ON city.country_id = c.country_id;
+
+-- выведем топ-5 жанров по доходу
+SELECT c.name, SUM(p.amount) revenue FROM category c 
+JOIN film_category fc ON c.category_id = fc.category_id
+JOIN inventory i ON fc.film_id = i.film_id
+JOIN rental r ON i.inventory_id = r.inventory_id
+JOIN payment p ON r.rental_id = p.rental_id
+GROUP BY c.name
+ORDER BY revenue DESC 
+LIMIT 5;
+
 ### Загрузить базу из файла *.tar
 - Создать БД с нужным названием createdb -U postgres name
 - Выполнить загрузку данных: pg_restore -U postgres -d dvdrental путь_к_вашему_файлу.tar
