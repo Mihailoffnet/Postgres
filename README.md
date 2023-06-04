@@ -72,7 +72,7 @@
 - SELECT name1, name2, name3 FROM table_name ORDER BY length name1, name2 LIMIT 15; - Вывести атрибуты name1, name2 и name3 первые 15 записей с сортировкой по возрастанию сначала по столбцу name1 потом по столбцу name2
 
 ## Агрегирующие функции
-- SELECT MAX(name1) FROM table_name; - найдем максимальное значение атрибута name1 в таблице table_name
+- SELECT MAX(name1), MIN(name1) FROM table_name; - найдем максимальное и минимальное значение атрибута name1 в таблице table_name
 - SELECT AVG(name1) FROM table_name; - найдем среднее значение атрибута name1 в таблице table_name
 - SELECT COUNT(DISTINCT name1) FROM table_name; - найдем количество (DISTINCT - уникальных) атрибутов name1 в таблице table_name
 - SELECT SUM(name1)б AVG(name1) FROM table_name WHERE name2 = X; - найдем сумму атрибутов name1 и среднее значение атрибутов name1 у которых name2 = X в таблице table_name 
@@ -215,8 +215,8 @@ GROUP BY rating;
 - выберем 2 столбца из таблицы film
 > SELECT title, release_year FROM film;
 
-- найдем максимальную стоимость проката
-> SELECT MAX(rental_rate) FROM film;
+- найдем максимальную и минимальную стоимость проката
+> SELECT MAX(rental_rate), MIN(rental_rate) FROM film;
 
 - посчитаем среднюю продолжительность фильма
 > SELECT AVG(length) FROM film;
