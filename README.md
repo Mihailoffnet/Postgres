@@ -82,7 +82,6 @@
 - SELECT name1, name2 FROM table_name WHERE name2 >= (SELECT AVG(name2) FROM table_name); найдем все записи с name2 больше или равному среднему значению. 
 - SELECT name1, name2 FROM table_name WHERE name2 < (SELECT MAX(name2) FROM table_name) ORDER BY name1 DESC; - найдем все записи с name2 которое меньше максимумального значения и отслортируем в обратном порядке по name1. 
 
-
 ## Группировки
 - SELECT name1, COUNT(*) FROM table_name GROUP BY name1 ORDER BY COUNT(*) DESC; сгруппируем и посчитаем количество name1, отсортируем в обратном порядке
 - SELECT name1, COUNT(name2) FROM table_name GROUP BY name1 ORDER BY COUNT(name2) DESC; - посчитаем количетсво name2 в разрезе name1 и отсортируем по name2 в обратном порядке
@@ -94,102 +93,19 @@ SELECT rating, AVG(length) FROM film
 WHERE release_year = 2006
 GROUP BY rating;
 
-
 ## Оператор HAVING
 ### Тоже, что и WHERE, но работает после выполнения WHERE по результатам первой выборки
-SELECT name1, COUNT(*) FROM table_name GROUP BY name1 HAVING COUNT(*) = 1; - отберем только name1, которые не повторяются и выведем все столбцы
+- SELECT name1, COUNT(*) FROM table_name GROUP BY name1 HAVING COUNT(*) = 1; - отберем только name1, которые не повторяются и выведем все столбцы
+- SELECT name1, COUNT(*) FROM table_name GROUP BY name1 HAVING COUNT(*) > 1 ORDER BY COUNT(*) DESC; - отберем и посчитаем только name1, которые повторяются (больше одного)
+- SELECT name1, SUM(name2) FROM table_name WHERE name1 LIKE '%Value%' GROUP BY title HAVING SUM(name2) > X; - найдем name1, у которых есть Value в названии и name2 в сумме больше Х
 
--- отберем и посчитаем только фамилии актеров, которые повторяются
-SELECT last_name, COUNT(*) FROM actor
-GROUP BY last_name
-HAVING COUNT(*) > 1
-ORDER BY COUNT(*) DESC;
+## ALIAS -псевдонимы
+- SELECT name1 AS n1, SUM(name2n) AS sum_n2 FROM table_name WHERE n1 LIKE '%Value%' GROUP BY n1 HAVING sum_n2 > X; - предыдущий запрос с псевдонимами
+- SELECT name1 n1, SUM(name2n) sum_n2 FROM table_name WHERE n1 LIKE '%Value%' GROUP BY n1 HAVING sum_n2 > X; - ключевое слово AS можно не писать, это все тот же запрос
 
--- найдем фильмы, у которых есть Super в названии 
--- и они сдавались в прокат суммарно более, чем на 5 дней
-SELECT title, SUM(rental_duration) FROM film
-WHERE title LIKE '%Super%'
-GROUP BY title
-HAVING SUM(rental_duration) > 5;
-
-
--- ALIAS
--- предыдущий запрос с псевдонимами
-SELECT title AS t, SUM(rental_duration) AS sum_t FROM film AS f
-WHERE title LIKE '%Super%'
-GROUP BY t
-HAVING SUM(rental_duration) > 5;
-
--- ключевое слово AS можно не писать
-SELECT title t, SUM(rental_duration) sum_t FROM film f
-WHERE title LIKE '%Super%'
-GROUP BY t
-HAVING SUM(rental_duration) > 5;
-
-
--- Объединение таблиц
--- выведем имена, фамилии и адреса всех сотрудников
-SELECT first_name, last_name, address FROM staff s
-LEFT JOIN address a ON s.address_id = a.address_id;
-
--- определим количество продаж каждого продавца
-SELECT s.last_name, COUNT(amount) FROM payment p
-LEFT JOIN staff s ON p.staff_id = s.staff_id
-GROUP BY s.last_name;
-
--- посчитаем, сколько актеров играло в каждом фильме
-SELECT title, COUNT(actor_id) actor_q FROM film f
-JOIN film_actor a ON f.film_id = a.film_id
-GROUP BY f.title
-ORDER BY actor_q DESC;
-
--- сколько копий фильмов со словом Super в названии есть в наличии
-SELECT title, COUNT(inventory_id) FROM film f
-JOIN inventory i ON f.film_id = i.film_id
-WHERE title LIKE '%Super%'
-GROUP BY title;
-
--- выведем список покупателей с количеством их покупок в порядке убывания
-SELECT c.last_name n, COUNT(p.amount) amount FROM customer c
-LEFT JOIN payment p ON c.customer_id = p.customer_id
-GROUP BY n
-ORDER BY amount DESC;
-
--- выведем имена и почтовые адреса всех покупателей из России
-SELECT c.last_name, c.first_name, c.email FROM customer c
-JOIN address a ON c.address_id = a.address_id
-JOIN city ON a.city_id = city.city_id
-JOIN country co ON city.country_id = co.country_id
-WHERE country = 'Russian Federation';
-
--- фильмы, которые берут в прокат чаще всего
-SELECT f.title, COUNT(r.inventory_id) count FROM film f
-JOIN inventory i ON f.film_id = i.film_id
-JOIN rental r ON i.inventory_id = r.inventory_id
-GROUP BY f.title
-ORDER BY count DESC;
-
--- суммарные доходы магазинов
-SELECT s.store_id, SUM(p.amount) sales FROM store s 
-JOIN staff st ON s.store_id = st.store_id
-JOIN payment p ON st.staff_id = p.staff_id
-GROUP BY s.store_id;
-
--- найдем города и страны каждого магазина
-SELECT store_id, city, country FROM store s 
-JOIN address a ON s.address_id = a.address_id
-JOIN city ON a.city_id = city.city_id
-JOIN country c ON city.country_id = c.country_id;
-
--- выведем топ-5 жанров по доходу
-SELECT c.name, SUM(p.amount) revenue FROM category c 
-JOIN film_category fc ON c.category_id = fc.category_id
-JOIN inventory i ON fc.film_id = i.film_id
-JOIN rental r ON i.inventory_id = r.inventory_id
-JOIN payment p ON r.rental_id = p.rental_id
-GROUP BY c.name
-ORDER BY revenue DESC 
-LIMIT 5;
+## JOIN - Объединение таблиц 
+- SELECT name1, name2, name3 FROM table_name1 t_n1 LEFT JOIN table_name2 t_n2 ON t_n1.foreign_id = t_n2.primery_id; - выведем name1, name2 (из table_name1) и name3 (из table_name2) объединив их на основании table_name1 (все строки из левой таблицы, из table_name1) через сопоставление внешнего ключа из table_name1 (t_n1) и первичного ключа из table_name2 (t_n2)
+- SELECT t_n1.name2, COUNT(name4) FROM table_name3 t_n3 LEFT JOIN table_name1 t_n1 ON t_n3.foreign_id = t_n1.primery_id GROUP BY t_n1.name2; - в продолжение прошлого кода определим количество name4 (из таблицы table_name3) для каждого name2 (из таблицы table_name1)
 
 ### Загрузить базу из файла *.tar
 - Создать БД с нужным названием createdb -U postgres name
@@ -289,6 +205,7 @@ LIMIT 5;
 >	student_id INTEGER NOT NULL REFERENCES Student(id),
 >	solution TEXT NOT NULL);
 
+### Примеры по БД DVD
 - выберем все поля из таблицы film
 > SELECT * FROM film;
 
@@ -298,17 +215,30 @@ LIMIT 5;
 - выберем 2 столбца из таблицы film
 > SELECT title, release_year FROM film;
 
-### DISTINCT
+- найдем максимальную стоимость проката
+> SELECT MAX(rental_rate) FROM film;
+
+- посчитаем среднюю продолжительность фильма
+> SELECT AVG(length) FROM film;
+
+- сколько уникальных имен актеров?
+>  SELECT COUNT(DISTINCT first_name) FROM actor
+
+- посчитаем сумму и средние продажи по конкретному продавцу
+> SELECT SUM(amount), AVG(amount) FROM payment
+> WHERE staff_id = 1;
+
+#### DISTINCT
 - выведем столбец rating из film
 > SELECT DISTINCT rating FROM film;
 
-### Примеры с арифметикой
+#### Примеры с арифметикой
 - переведем цены в условные рубли
 > SELECT amount * 70 FROM payment;
 - узнаем время аренды по позициям
 > SELECT return_date - rental_date FROM rental;
 
-### WHERE
+#### WHERE
 - найдем фильмы, вышедшие после 2000
 > SELECT title, release_year FROM film 
 > WHERE release_year >= 2000;
@@ -327,7 +257,7 @@ LIMIT 5;
 - найдем только работающих сотрудников из всех магазинов, кроме 1
 > SELECT first_name, last_name FROM staff 
 
-### AND / OR / NOT 
+#### AND / OR / NOT 
 ##### Логика: Выполняется сначала AND потом OR
 > WHERE active = true AND NOT store_id = 1;
 - найдем фильмы, цена проката которых меньше 0.99, а цена возмещения меньше 9.99
@@ -337,7 +267,7 @@ LIMIT 5;
 > SELECT title, length, rental_rate, replacement_cost FROM film 
 > WHERE rental_rate <= 0.99 AND replacement_cost <= 9.99 OR length < 50;
 
-### IN / NOT IN
+#### IN / NOT IN
 - найдем фильмы с рейтингом R, NC-17
 > SELECT title, description, rating FROM film 
 > WHERE rating IN ('R', 'NC-17');
@@ -345,7 +275,7 @@ LIMIT 5;
 > SELECT title, description, rating FROM film 
 > WHERE rating NOT IN ('G', 'PG');
 
-### BETWEEN
+#### BETWEEN
 ##### BETWEEN X AND Y - между X и Y
 - в диапазоне (включая границы)
 > SELECT title, rental_rate FROM film 
@@ -356,8 +286,8 @@ LIMIT 5;
 > WHERE rental_rate NOT 
 > BETWEEN 0.99 AND 3;
 
-### LIKE
-#### LIKE позволяет искать вхождение внутри слов
+#### LIKE
+##### LIKE позволяет искать вхождение внутри слов
 - найдем фильм, в описании которого есть Scientist
 > SELECT title, description FROM film 
 > WHERE description 
@@ -371,7 +301,7 @@ LIMIT 5;
 > WHERE last_name 
 > LIKE '%gen';
 
-### ORDER BY
+#### ORDER BY
 - отсортируем фильмы по цене проката
 > SELECT title, rental_rate FROM film 
 > ORDER BY rental_rate;
@@ -386,10 +316,139 @@ LIMIT 5;
 > WHERE last_name LIKE '%li%' 
 > ORDER BY last_name, first_name;
 
-### LIMIT
+#### LIMIT
 - выведем первые 15 записей
 > SELECT title, length, rental_rate FROM film
 >  ORDER BY length DESC, rental_rate 
 >  LIMIT 15;
   
+#### Вложенные запросы
+- найдем все фильмы с продолжительностью ваше среднего
+> SELECT title, length FROM film
+> WHERE length >= (SELECT AVG(length) FROM film);
+
+- найдем названия фильмов, стоимость проката которых не максимальная
+> SELECT title, rental_rate FROM film
+> WHERE rental_rate < (SELECT MAX(rental_rate) FROM film)
+> ORDER BY rental_rate DESC;
+
+#### Группировки
+- посчитаем количество актеров в разрезе фамилий (найдем однофамильцев)
+> SELECT last_name, COUNT(*) FROM actor
+> GROUP BY last_name
+> ORDER BY COUNT(*) DESC;
+
+- посчитаем количество фильмов в разрезе рейтингов (распределение рейтингов)
+> SELECT rating, COUNT(title) FROM film
+> GROUP BY rating
+> ORDER BY COUNT(title) DESC;
+
+- найдем максимальные продажи в разрезе продавцов
+> SELECT staff_id, MAX(amount) FROM payment
+> GROUP BY staff_id;
+
+- найдем средние продажи каждого продавца каждому покупателю
+> SELECT staff_id, customer_id, AVG(amount) FROM payment
+> GROUP BY staff_id, customer_id
+> ORDER BY AVG(amount) DESC;
+
+- найдем среднюю продолжительность фильма в разрезе рейтингов в 2006 году
+> SELECT rating, AVG(length) FROM film
+> WHERE release_year = 2006
+> GROUP BY rating;
+
+#### Оператор HAVING
+- отберем только фамилии актеров, которые не повторяются
+> SELECT last_name, COUNT(*) FROM actor
+> GROUP BY last_name
+> HAVING COUNT(*) = 1;
+
+- отберем и посчитаем только фамилии актеров, которые повторяются
+> SELECT last_name, COUNT(*) FROM actor
+> GROUP BY last_name
+> HAVING COUNT(*) > 1
+> ORDER BY COUNT(*) DESC;
+
+- найдем фильмы, у которых есть Super в названии и они сдавались в прокат суммарно более, чем на 5 дней
+> SELECT title, SUM(rental_duration) FROM film
+> WHERE title LIKE '%Super%'
+> GROUP BY title
+> HAVING SUM(rental_duration) > 5;
+
+#### ALIAS
+- предыдущий запрос с псевдонимами
+> SELECT title AS t, SUM(rental_duration) AS sum_t FROM film AS f
+> WHERE title LIKE '%Super%'
+> GROUP BY t
+> HAVING SUM(rental_duration) > 5;
+
+- ключевое слово AS можно не писать, тот же предыдущий запрос
+> SELECT title t, SUM(rental_duration) sum_t FROM film f
+> WHERE title LIKE '%Super%'
+> GROUP BY t
+> HAVING SUM(rental_duration) > 5;
+
+#### JOIN Объединение таблиц
+- выведем имена, фамилии и адреса всех сотрудников
+> SELECT first_name, last_name, address FROM staff s
+> LEFT JOIN address a ON s.address_id = a.address_id;
+
+- определим количество продаж каждого продавца
+> SELECT s.last_name, COUNT(amount) FROM payment p
+> LEFT JOIN staff s ON p.staff_id = s.staff_id
+> GROUP BY s.last_name;
+
+- посчитаем, сколько актеров играло в каждом фильме
+> SELECT title, COUNT(actor_id) actor_q FROM film f
+> JOIN film_actor a ON f.film_id = a.film_id
+> GROUP BY f.title
+> ORDER BY actor_q DESC;
+
+- сколько копий фильмов со словом Super в названии есть в наличии
+> SELECT title, COUNT(inventory_id) FROM film f
+> JOIN inventory i ON f.film_id = i.film_id
+> WHERE title LIKE '%Super%'
+> GROUP BY title;
+
+- выведем список покупателей с количеством их покупок в порядке убывания
+> SELECT c.last_name n, COUNT(p.amount) amount FROM customer c
+> LEFT JOIN payment p ON c.customer_id = p.customer_id
+> GROUP BY n
+> ORDER BY amount DESC;
+
+- выведем имена и почтовые адреса всех покупателей из России
+> SELECT c.last_name, c.first_name, c.email FROM customer c
+> JOIN address a ON c.address_id = a.address_id
+> JOIN city ON a.city_id = city.city_id
+> JOIN country co ON city.country_id = co.country_id
+> WHERE country = 'Russian Federation';
+
+- фильмы, которые берут в прокат чаще всего
+> SELECT f.title, COUNT(r.inventory_id) count FROM film f
+> JOIN inventory i ON f.film_id = i.film_id
+> JOIN rental r ON i.inventory_id = r.inventory_id
+> GROUP BY f.title
+> ORDER BY count DESC;
+
+- суммарные доходы магазинов
+> SELECT s.store_id, SUM(p.amount) sales FROM store s 
+> JOIN staff st ON s.store_id = st.store_id
+> JOIN payment p ON st.staff_id = p.staff_id
+> GROUP BY s.store_id;
+
+- найдем города и страны каждого магазина
+> SELECT store_id, city, country FROM store s 
+> JOIN address a ON s.address_id = a.address_id
+> JOIN city ON a.city_id = city.city_id
+> JOIN country c ON city.country_id = c.country_id;
+
+- выведем топ-5 жанров по доходу
+> SELECT c.name, SUM(p.amount) revenue FROM category c 
+> JOIN film_category fc ON c.category_id = fc.category_id
+> JOIN inventory i ON fc.film_id = i.film_id
+> JOIN rental r ON i.inventory_id = r.inventory_id
+> JOIN payment p ON r.rental_id = p.rental_id
+> GROUP BY c.name
+> ORDER BY revenue DESC 
+> LIMIT 5;
 
